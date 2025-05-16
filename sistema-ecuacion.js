@@ -9,7 +9,7 @@ class SistemaEcuacion extends HTMLElement {
 
     const latex = `
       \\begin{cases}
-      ${a}x + ${b}y = ${c} \\\\
+      ${a}x + ${b}y = ${c}
       ${d}x + ${e}y = ${f}
       \\end{cases}
     `;
