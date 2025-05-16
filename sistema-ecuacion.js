@@ -4,15 +4,25 @@ class SistemaEcuacion extends HTMLElement {
   }
 
   connectedCallback() {
-    const format = (coef) => {
-      const n = coef.trim();
-      return n.startsWith('-') ? n : `+ ${n}`;
+    const format = (coef, variable) => {
+      const n = Number(coef);
+      if (n === 1) return `+ ${variable}`;
+      if (n === -1) return `- ${variable}`;
+      if (n < 0) return `${n}${variable}`;
+      return `+ ${n}${variable}`;
     };
+
+    const a = Number(this.getAttribute('a'));
+    const b = Number(this.getAttribute('b'));
+    const c = Number(this.getAttribute('c'));
+    const d = Number(this.getAttribute('d'));
+    const e = Number(this.getAttribute('e'));
+    const f = Number(this.getAttribute('f'));
 
     const latex = `
 \\begin{cases}
-${this.getAttribute('a')}x ${format(this.getAttribute('b'))}y = ${this.getAttribute('c')} \\\\
-${this.getAttribute('d')}x ${format(this.getAttribute('e'))}y = ${this.getAttribute('f')}
+${a}x ${format(b, 'y')} = ${c} \\\\
+${d}x ${format(e, 'y')} = ${f}
 \\end{cases}
 `;
 
