@@ -1,2 +1,2 @@
 # test_mathjax
-test de codigo math jax
+https://NicolasRobledo.github.io/test_mathjax
