@@ -4,25 +4,27 @@ class SistemaEcuacion extends HTMLElement {
   }
 
   connectedCallback() {
-    const format = (coef) => coef.startsWith('-') ? `{${coef}}` : coef; // Manejar negativos
+    const format = (coef) => {
+      const n = coef.trim();
+      return n.startsWith('-') ? n : `+ ${n}`;
+    };
 
-const latex = `
-  \\begin{cases}
-  \\{ ${format(this.getAttribute('a'))}x + ${format(this.getAttribute('b'))}y = ${format(this.getAttribute('c'))} \\} \\\\
-  \\{ ${format(this.getAttribute('d'))}x + ${format(this.getAttribute('e'))}y = ${format(this.getAttribute('f'))} \\}
-  \\end{cases}
+    const latex = `
+\\begin{cases}
+${this.getAttribute('a')}x ${format(this.getAttribute('b'))}y = ${this.getAttribute('c')} \\\\
+${this.getAttribute('d')}x ${format(this.getAttribute('e'))}y = ${this.getAttribute('f')}
+\\end{cases}
 `;
 
     const div = document.createElement('div');
     div.innerHTML = `\\[${latex}\\]`;
     this.appendChild(div);
 
-    // Esperar a que MathJax esté listo
     const checkMathJax = () => {
       if (window.MathJax?.typesetPromise) {
         MathJax.typesetPromise([div]).catch(err => console.error("Error al renderizar:", err));
       } else {
-        setTimeout(checkMathJax, 100); // Reintentar cada 100ms
+        setTimeout(checkMathJax, 100);
       }
     };
 
