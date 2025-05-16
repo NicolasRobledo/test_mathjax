@@ -3,43 +3,39 @@ class SistemaEcuacion extends HTMLElement {
     super();
   }
 
-  connectedCallback() {
-    const format = (coef, variable) => {
-      const n = Number(coef);
-      if (n === 1) return `+ ${variable}`;
-      if (n === -1) return `- ${variable}`;
-      if (n < 0) return `${n}${variable}`;
-      return `+ ${n}${variable}`;
-    };
+  async connectedCallback() {
+    const a = this.getAttribute('a');
+    const b = this.getAttribute('b');
+    const c = this.getAttribute('c');
+    const d = this.getAttribute('d');
+    const e = this.getAttribute('e');
+    const f = this.getAttribute('f');
 
-    const a = Number(this.getAttribute('a'));
-    const b = Number(this.getAttribute('b'));
-    const c = Number(this.getAttribute('c'));
-    const d = Number(this.getAttribute('d'));
-    const e = Number(this.getAttribute('e'));
-    const f = Number(this.getAttribute('f'));
+    if (!window.pyodide) {
+      window.pyodide = await loadPyodide();
+      await cargarPython(window.pyodide);
+    }
 
-    const latex = `
-\\begin{cases}
-${a}x ${format(b, 'y')} = ${c} \\\\
-${d}x ${format(e, 'y')} = ${f}
-\\end{cases}
-`;
+    // Ejecutar la función de ecuaciones que definiste en ecuaciones.py
+    const code = `generar_latex(${a}, ${b}, ${c}, ${d}, ${e}, ${f})`;
+    const latex = await window.pyodide.runPythonAsync(code);
 
     const div = document.createElement('div');
     div.innerHTML = `\\[${latex}\\]`;
     this.appendChild(div);
 
-    const checkMathJax = () => {
-      if (window.MathJax?.typesetPromise) {
-        MathJax.typesetPromise([div]).catch(err => console.error("Error al renderizar:", err));
-      } else {
-        setTimeout(checkMathJax, 100);
-      }
-    };
-
-    checkMathJax();
+    if (window.MathJax?.typesetPromise) {
+      MathJax.typesetPromise([div]).catch(err => console.error("Error al renderizar:", err));
+    }
   }
 }
 
+// Función para cargar el archivo Python externo
+async function cargarPython(pyodide) {
+  const response = await fetch('/py/ecuaciones.py');
+  const pyCode = await response.text();
+  await pyodide.runPythonAsync(pyCode);
+}
+
 customElements.define('sistema-ecuacion', SistemaEcuacion);
+
