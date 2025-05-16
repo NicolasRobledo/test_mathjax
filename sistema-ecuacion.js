@@ -11,12 +11,12 @@ class SistemaEcuacion extends HTMLElement {
     const d = this.getAttribute('d');
     const e = this.getAttribute('e');
     const f = this.getAttribute('f');
-/*
+
     if (!window.pyodide) {
       window.pyodide = await loadPyodide();
       await cargarPython(window.pyodide);
     }
-*/
+
     // Ejecutar la función de ecuaciones que definiste en ecuaciones.py
     const code = `generar_latex(${a}, ${b}, ${c}, ${d}, ${e}, ${f})`;
     const latex = await window.pyodide.runPythonAsync(code);
